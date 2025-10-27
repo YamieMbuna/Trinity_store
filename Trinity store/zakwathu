@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zakwathu Exports | Kweza Traders</title>
+  <meta name="description" content="Discover export-quality Malawian artisanal products. Support creators with transparent, DDP pricing.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="brand">
+        <div class="brand-logo">KZ</div>
+        <div>
+          <h1>Kweza Traders</h1>
+          <div class="brand-tagline">To Elevate — Zakwathu Exports</div>
+        </div>
+      </div>
+      <a class="anycoder-link" href="https://huggingface.co/spaces/akhaliq/anycoder" target="_blank" rel="noopener">Built with anycoder</a>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="zakwathu.html" class="active">Zakwathu</a></li>
+          <li><a href="kutsitsa.html">Kutsitsa</a></li>
+          <li><a href="checkout.html">Checkout</a></li>
+          <li><a href="track.html">Track Order</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <h2>Zakwathu (Exports) — Shop Artisan Goods</h2>
+      <p>Export-quality Malawian products. Final prices include international shipping and destination duties/taxes (DDP).</p>
+    </section>
+
+    <section class="section">
+      <h3>Featured Products</h3>
+      <div class="product-grid" id="products">
+        <!-- Products will be rendered by JS -->
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Kweza Traders. To Elevate. All rights reserved.</p>
+  </footer>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    // Sample products for Zakwathu
+    const SAMPLE_ZAKWATHU = [
+      {
+        id: 'zak-chocala',
+        name: 'Chocala Elephant Sculpture',
+        image: 'https://images.unsplash.com/photo-1594736797933-d0b22ed79815?q=80&w=800&auto=format&fit=crop',
+        artisanPrice: 80,
+        weightKg: 2.0,
+        description: 'Hand-carved Chocala wood elephant sculpture.'
+      },
+      {
+        id: 'zak-basket',
+        name: 'Mlolo Woven Basket',
+        image: 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?q=80&w=800&auto=format&fit=crop',
+        artisanPrice: 45,
+        weightKg: 1.2,
+        description: 'TraditionalMlolo basket woven from local palm.'
+      },
+      {
+        id: 'zak-mask',
+        name: 'Gule Wamkulu Mask',
+        image: 'https://images.unsplash.com/photo-1582053433972-43c4463f9e6c?q=80&w=800&auto=format&fit=crop',
+        artisanPrice: 120,
+        weightKg: 1.0,
+        description: 'Ceremonial mask with cultural significance.'
+      }
+    ];
+
+    function renderProducts() {
+      const container = document.getElementById('products');
+      container.innerHTML = '';
+
+      SAMPLE_ZAKWATHU.forEach(p => {
+        const pricing = window.Kweza.Pricing.calculateZakwathu(p);
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" class="product-image">
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+            <div class="product-meta">${p.description}</div>
+            <div class="product-price">${formatCurrency(pricing.finalPrice)}</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" class="form-control weight-input" value="${p.weightKg}" min="0.1" step="0.1">
+              </div>
+              <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" class="form-control qty-input" value="1" min="1">
+              </div>
+            </div>
+            <button class="cta-button" data-action="add-to-cart">Add to Cart</button>
+          </div>
+        `;
+
+        card.querySelector('[data-action="add-to-cart"]').addEventListener('click', () => {
+          const weight = parseFloat(card.querySelector('.weight-input').value) || p.weightKg;
+          const qty = parseInt(card.querySelector('.qty-input').value) || 1;
+
+          const item = {
+            id: p.id,
+            service: 'zakwathu',
+            name: p.name,
+            image: p.image,
+            quantity: qty,
+            artisanPrice: p.artisanPrice,
+            weightKg: weight
+          };
+
+          const updatedPricing = window.Kweza.Pricing.calculateZakwathu({ ...p, weightKg: weight });
+          window.Kweza.Cart.add(item, updatedPricing);
+          alert('Added to cart!');
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
